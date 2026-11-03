@@ -110,6 +110,7 @@
       "qr_code": "03013386",
       "name": "Executive Charge Point 1",
       "description": "Reserved",
+      "reserved": true,
       "latitude": 51.919923,
       "longitude": 6.370624
     },
@@ -117,6 +118,7 @@
       "qr_code": "07001614",
       "name": "Executive Charge Point 2",
       "description": "Reserved",
+      "reserved": true,
       "latitude": 51.919923,
       "longitude": 6.370624
     },
@@ -124,6 +126,7 @@
       "qr_code": "03011164",
       "name": "Executive Charge Point 3",
       "description": "Reserved",
+      "reserved": true,
       "latitude": 51.919923,
       "longitude": 6.370624
     },
@@ -131,6 +134,7 @@
       "qr_code": "07000171",
       "name": "Executive Charge Point 4",
       "description": "Reserved",
+      "reserved": true,
       "latitude": 51.919923,
       "longitude": 6.370624
     }

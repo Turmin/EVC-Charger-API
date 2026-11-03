@@ -46,6 +46,8 @@ def load_config():
         raise ValueError("chargers must be a list with a qr_code for each charger")
     if len({item["qr_code"] for item in chargers}) != len(chargers):
         raise ValueError("qr_code must be unique")
+    if any(not isinstance(item.get("reserved", False), bool) for item in chargers):
+        raise ValueError("reserved must be true or false")
     schedule = data.get("polling_schedule")
     if schedule is not None:
         if not isinstance(schedule, list) or not schedule or any(

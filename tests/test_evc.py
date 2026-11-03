@@ -60,6 +60,24 @@ class ChargerStatusTest(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     app.load_config()
 
+    def test_reserved_flag_is_validated_and_returned(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.json"
+            path.write_text(json.dumps({"chargers": [{"qr_code": "A", "reserved": "yes"}]}))
+            with patch.object(app, "CONFIG_PATH", path):
+                with self.assertRaises(ValueError):
+                    app.load_config()
+            path.write_text(json.dumps({"chargers": [
+                {"qr_code": "A", "reserved": True}, {"qr_code": "B"},
+            ]}))
+            with patch.object(app, "CONFIG_PATH", path), patch.object(
+                app, "DB_PATH", Path(directory) / "status.sqlite3"
+            ):
+                with patch.object(app, "config", app.load_config()):
+                    chargers = app.snapshot()
+        self.assertIs(chargers[0]["reserved"], True)
+        self.assertNotIn("reserved", chargers[1])
+
     def test_legacy_interval_applies_on_weekends(self):
         with patch.object(app, "config", {"poll_interval_seconds": 1200}), patch.object(
             app, "datetime"
