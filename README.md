@@ -4,7 +4,7 @@ A small API for tracking the current status and observed status history of confi
 
 ## Setup
 
-Add charging points to `config.json` under `chargers`. Each entry needs a unique `qr_code`. The optional `name`, `description`, `latitude`, and `longitude` fields are returned to map clients unchanged.
+Add charging points to `config.json` under `chargers`. Each entry needs a unique `qr_code`. The optional `name`, `description`, `latitude`, and `longitude` fields are returned to map clients unchanged. Set the optional `reserved` field to `true` for charging points that are assigned to specific people and not open to everyone; it defaults to `false` and is also returned unchanged, so clients can show these points separately. The API polls reserved points like any other point.
 
 Set `EVC_API_KEY` in the environment or in a local, unshared `.env` file. `EVC_DEVICE_ID` and `EVC_BASE_URL` are optional. The API starts without a key, but `GET /chargers` reports an error for each charging point it cannot refresh. Use an API key only where your EVC-net integration permits it.
 
