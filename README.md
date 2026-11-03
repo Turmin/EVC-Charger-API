@@ -1,4 +1,4 @@
-# EVC Charger Status
+# EVC Charger API
 
 A small API for tracking the current status and observed status history of configured EVC-net charging points.
 
