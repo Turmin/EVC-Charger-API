@@ -1,3 +1,4 @@
+import hmac
 import json
 import logging
 import math
@@ -14,7 +15,7 @@ from zoneinfo import ZoneInfo
 
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import FastAPI, Header, HTTPException, Query, Response
 
 load_dotenv()
 AMSTERDAM = ZoneInfo("Europe/Amsterdam")
@@ -399,9 +400,22 @@ def charger_history(qr_code: str, limit: int = Query(100, ge=1, le=1000)):
     ]}
 
 
+def require_admin_token(authorization):
+    expected = os.getenv("EVC_ADMIN_TOKEN", "").strip()
+    if not expected:
+        raise HTTPException(status_code=403, detail="EVC_ADMIN_TOKEN is not configured")
+    scheme, _, provided = (authorization or "").partition(" ")
+    if scheme.lower() != "bearer" or not provided.strip():
+        raise HTTPException(status_code=401, detail="Missing bearer token",
+                            headers={"WWW-Authenticate": "Bearer"})
+    if not hmac.compare_digest(expected.encode(), provided.strip().encode()):
+        raise HTTPException(status_code=403, detail="Invalid bearer token")
+
+
 @app.post("/reload")
-def reload_config():
+def reload_config(authorization: str | None = Header(None)):
     global config
+    require_admin_token(authorization)
     try:
         updated = load_config()
     except (OSError, ValueError, KeyError) as exc:
