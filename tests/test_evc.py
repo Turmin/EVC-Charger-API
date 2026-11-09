@@ -320,6 +320,29 @@ class ChargerStatusTest(unittest.TestCase):
         self.assertIn({"method": "POST", "path": "/reload",
                        "description": "Reload configuration"}, response["endpoints"])
 
+    def test_reload_requires_configured_admin_token(self):
+        with patch.dict("os.environ", {"EVC_ADMIN_TOKEN": ""}):
+            with self.assertRaises(HTTPException) as raised:
+                app.reload_config("Bearer anything")
+        self.assertEqual(raised.exception.status_code, 403)
+
+    def test_reload_rejects_missing_or_wrong_token(self):
+        with patch.dict("os.environ", {"EVC_ADMIN_TOKEN": "secret-token"}):
+            with self.assertRaises(HTTPException) as missing:
+                app.reload_config(None)
+            with self.assertRaises(HTTPException) as wrong:
+                app.reload_config("Bearer other-token")
+        self.assertEqual(missing.exception.status_code, 401)
+        self.assertEqual(wrong.exception.status_code, 403)
+
+    def test_reload_accepts_valid_token(self):
+        updated = {"chargers": [{"qr_code": "A"}, {"qr_code": "B"}]}
+        with patch.dict("os.environ", {"EVC_ADMIN_TOKEN": "secret-token"}), \
+                patch.object(app, "load_config", return_value=updated), \
+                patch.object(app, "config", {"chargers": []}):
+            response = app.reload_config("Bearer secret-token")
+        self.assertEqual(response, {"status": "reloaded", "configuredChargers": 2})
+
     def test_status_since_survives_same_status_and_changes_on_transition(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(
             app, "DB_PATH", Path(directory) / "status.sqlite3"

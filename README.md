@@ -23,7 +23,7 @@ Start the server from the project directory:
 - `POST /chargers/live` forces a fresh fetch for all configured chargers and returns `chargers` plus the updated `liveRefresh` status. This is intended for an explicit user action such as a Live button. It allows at most 20 refreshes per Amsterdam calendar day, at least 60 seconds apart. The counter is stored beside the SQLite database and survives restarts. When a limit is reached, the API returns HTTP 429 with a `Retry-After` header and a `detail` object containing `code` (`cooldown_active` or `daily_limit_reached`), `message`, `retryAfterSeconds`, and `liveRefresh`.
 - `GET /chargers/{qr_code}` returns one configured charger's current status in a `charger` object. Only that charger is refreshed when its polling interval expires; unknown QR codes return 404.
 - `GET /chargers/{qr_code}/history?limit=100` returns status periods from SQLite, newest first. `since` marks the first observation of a status and `until` marks the first observation of the next status. The current period has `until: null`. The limit can be 1 to 1000. This endpoint does not call EVC-net.
-- `POST /reload` reloads `config.json` without restarting the server.
+- `POST /reload` reloads `config.json` without restarting the server. It requires `Authorization: Bearer <token>`, where the token is the value of `EVC_ADMIN_TOKEN` in the environment or `.env`. Without a configured token the endpoint always answers `403`.
 
 ### Live refresh examples
 

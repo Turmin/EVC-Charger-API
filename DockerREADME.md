@@ -4,7 +4,7 @@ On pull requests, GitHub Actions runs the unit tests. On pushes to `main`, it al
 
 ## VPS setup
 
-Create a private deployment directory, for example `/srv/evc-charger-status-api`, owned by the deploy user. Put `.env` with `EVC_API_KEY=...` there. The workflow uploads the tracked `config.json` with the charger list on each deployment. Optional `.env` entries are `EVC_DEVICE_ID`, `EVC_BASE_URL`, and `EVC_PORT` (default 8001 on the VPS). The private `.env` is ignored by Git and stays on the VPS. The workflow also uploads `docker-compose.yml`.
+Create a private deployment directory, for example `/srv/evc-charger-status-api`, owned by the deploy user. Put `.env` with `EVC_API_KEY=...` there. The workflow uploads the tracked `config.json` with the charger list on each deployment. Optional `.env` entries are `EVC_DEVICE_ID`, `EVC_BASE_URL`, `EVC_PORT` (default 8001 on the VPS), and `EVC_ADMIN_TOKEN` (a long random value; required to use `POST /reload`). The private `.env` is ignored by Git and stays on the VPS. The workflow also uploads `docker-compose.yml`.
 
 Before the first deploy, create the private environment file on the VPS:
 
